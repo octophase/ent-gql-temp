@@ -1,0 +1,42 @@
+version: "3"
+dotenv: [".env"]
+passthroughArgs: true
+
+# https://tutorialedge.net/golang/taskfiles-for-go-developers/
+
+tasks:
+  dev:
+    cmds:
+      - air
+  docker:
+    cmds:
+      - docker-compose up
+  format:
+    cmds:
+      go fmt ./...
+  tidy:
+    cmds:
+      - go mod tidy
+  docs:
+    cmds:
+      - swag init --dir ./cmd
+  build:
+    cmds:
+      - go build -o myapp ./cmd
+  test:
+    cmds:
+      - go test -v ./...
+  start:
+    cmds:
+      - ./myapp
+  migrate:
+    cmds:
+      - atlas migrate diff {{.CLI_ARGS}} --dir "file://ent/migrate/migrations" --to "ent://ent/schema" --dev-url "postgres://postgres:postres@localhost:5432/myapp-ent?sslmode=disable"
+  generate:
+    desc: Runs all //go:generate commands embedded in .go files
+    cmds:
+      - go generate ./...
+  install:
+    cmds:
+      - go install github.com/swaggo/swag/cmd/swag@latest
+      - go install github.com/go-task/task/v3/cmd/task@latest
